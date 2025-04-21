@@ -22,7 +22,7 @@ of the paths we open.
 
 Why all the effort to detect bind mount points? People are doing all kinds of
 things with Linux containers these days, with many different privilege schemes,
-and we want to avoid making any unnecessary assumptions. Rustix and its users
+and we want to avoid making any unnecessary assumptions. Libraries
 will sometimes use procfs *implicitly* (when Linux gives them no better
 options), in ways that aren't obvious from their public APIs. These filesystem
 accesses might not be visible to someone auditing the main code of an
