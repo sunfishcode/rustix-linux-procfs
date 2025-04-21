@@ -12,11 +12,15 @@ edition = "2021"
 keywords = ["linux", "procfs"]
 categories = ["os::unix-apis"]
 include = ["src", "Cargo.toml", "COPYRIGHT", "LICENSE*", "/*.md"]
-rust-version = "1.70"
+rust-version = "1.63"
 
 [dependencies]
 rustix = { version = "1.0.0", default-features = false, features = ["alloc", "fs"] }
 once_cell = "1.5.2"
+
+[features]
+default = ["std"]
+std = ["rustix/std"]
 
 [dev-dependencies]
 rustix = { version = "1.0.0", default-features = false, features = ["std"] }
