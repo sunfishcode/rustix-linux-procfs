@@ -250,7 +250,6 @@ fn proc() -> io::Result<(BorrowedFd<'static>, &'static Stat)> {
 ///  - [Linux]
 ///
 /// [Linux]: https://man7.org/linux/man-pages/man5/proc.5.html
-#[allow(unsafe_code)]
 fn proc_self() -> io::Result<(BorrowedFd<'static>, &'static Stat)> {
     static PROC_SELF: StaticFd = StaticFd::new();
 
@@ -264,12 +263,11 @@ fn proc_self() -> io::Result<(BorrowedFd<'static>, &'static Stat)> {
             // the procfs namespace.
             let self_symlink = open_and_check_file(proc, proc_stat, cstr!("self"), Kind::Symlink)?;
             let mut buf = [MaybeUninit::<u8>::uninit(); 20];
-            let (init, _uninit) = readlinkat_raw(self_symlink, cstr!(""), &mut buf)?;
-            let pid: &[u8] = unsafe { core::mem::transmute(init) };
+            let (pid, _uninit) = readlinkat_raw(self_symlink, cstr!(""), &mut buf)?;
 
             // Open "/proc/self". Use our pid to compute the name rather than
             // literally using "self", as "self" is a symlink.
-            let proc_self = proc_opendirat(proc, pid)?;
+            let proc_self = proc_opendirat(proc, &*pid)?;
             let proc_self_stat = check_proc_entry(Kind::Pid, proc_self.as_fd(), Some(proc_stat))
                 .map_err(|_err| io::Errno::NOTSUP)?;
 
